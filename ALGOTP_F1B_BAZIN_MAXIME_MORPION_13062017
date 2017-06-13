@@ -1,0 +1,326 @@
+algo morpion;
+//BUT : FAIRE un morpion
+//ENTRER : les pseudo des joueur,position de placement
+//SORTIE : qui a perdu la manche , qui a gagner la partie(plus tard) 
+
+//nombre de manche à gagner pour gangner la partie
+constante 							
+	At_v=3						
+
+//base du plateu de jeu
+TYPE
+	tableau = TABLEAU de 1 a 5 de CHAINE
+FINTYPE
+
+//fichier de l'historique
+TYPE
+		fiche_text=TEXT
+
+var
+	symbole_j,joueurJ,joueurJ1,joueurJ2:CHAINE
+	ligne_1:tableau
+	ligne_2:tableau
+	ligne_3:tableau
+	ligne_grille:tableau
+	i,j,cpt_tour,nbcoup,score_j1,score_j2:ENTIER
+	test:BOOLEEN
+	f_partie:fiche_text
+
+
+//intialisation du contenu de la grille
+
+procedure init_grille
+//BUT: créer les éléments de la grille
+//ENTRER: aucune
+//SORTIE:	les éléments initialisés
+
+var i,j:ENTIER
+
+DEBUT
+	POUR i<-1 A 5 FAIRE 
+		ligne_grille[i]<-'-'		
+
+	ligne_1[1]<-'1'
+	ligne_1[2]<-'|'
+	ligne_1[3]<-'2'
+	ligne_1[4]<-'|'
+	ligne_1[5]<-'3'
+
+	ligne_2[1]<-'4'
+	ligne_2[2]<-'|'
+	ligne_2[3]<-'5'
+	ligne_2[4]<-'|'
+	ligne_2[5]<-'6'
+
+	ligne_3[1]<-'7'
+	ligne_3[2]<-'|'
+	ligne_3[3]<-'8'
+	ligne_3[4]<-'|'
+	ligne_3[5]<-'9'
+FINPROCEDURE
+
+//affichage de la grille ligne par ligne
+procedure affiche_grille
+//BUT:afficher la grille
+//ENTRER:aucune
+//SORTIE:la grille afficher à l'écran
+
+DEBUT
+	POUR i DE 1 A 5 FAIRE
+		ECRIRE(ligne_1[i])
+	
+	POUR i DE 1 A 5 FAIRE	
+		ECRIRE(ligne_grille[i])
+	
+	POUR i DE 1 A 5 FAIRE
+		ECRIRE(ligne_2[i])
+	
+	POUR i DE 1 A 5 FAIRE
+		ECRIRE(ligne_grille[i])
+	
+	POUR i DE 1 A 5 FAIRE
+		ECRIRE(ligne_3[i])
+	
+
+FINPROCEDURE
+
+//
+
+PROCEDURE jouer
+//BUT: placer le symbole du joueur sur la grille
+//ENTRER: la position souhaité par la joueur
+//SORTIE: placement du symbole du joueur si possible
+
+	var 
+		position:ENTIER     //en rapport avcec la grille qui sera afficher
+		test:BOOLEEN		//si la position n'a pas déjà été choisie
+
+DEBUT
+	REPETER
+	DEBUT
+		test<-FAUX;
+
+		//on demande un position au joueur
+		ECRIRE('Joueur ',joueurJ,' ou voulez vous placer votre ',symbole_j)
+		LIRE(position)
+
+		//d'apprait la position demander si la position est libre alors on place le symbole du joueur
+		CASE position PARMI
+				1:	SI ligne_1[1]='1' ALORS
+					DEBUT
+						ligne_1[1]<-symbole_j
+						test<-true
+					FINSI
+				2:	SI ligne_1[3]='2' ALORS
+					DEBUT
+						ligne_1[3]<-symbole_j
+						test<-true
+					FINSI
+				3:	SI ligne_1[5]='3' ALORS
+					DEBUT
+						ligne_1[5]<-symbole_j
+						test<-true
+					FINSI
+				4:	SI ligne_2[1]='4' ALORS
+					DEBUT
+						ligne_2[1]<-symbole_j
+						test<-true
+					FINSI
+				5:	SI ligne_2[3]='5' ALORS
+					DEBUT
+						ligne_2[3]<-symbole_j
+						test<-true
+					FINSI
+				6:	SI ligne_2[5]='6' ALORS
+					DEBUT
+						ligne_2[5]<-symbole_j
+						test<-true
+					FINSI
+				7:	SI ligne_3[1]='7' ALORS
+					DEBUT
+						ligne_3[1]<-symbole_j
+						test<-true
+					FINSI
+				8:	SI ligne_3[3]='8' ALORS
+					DEBUT
+						ligne_3[3]<-symbole_j
+						test<-true
+					FINSI			
+				9:	SI ligne_3[5]='9' ALORS
+					DEBUT
+						ligne_3[5]<-symbole_j
+						test<-true
+					FINSI
+		FINCASPARMI
+
+		//si la position est prise
+		SI test=FAUX ALORS
+			ECRIRE('place indisponible')
+		FINSI
+	//on recommence jusqu'a ce que la position soit libre
+	JUSQU'A test=true;
+FINPROCEDURE
+
+
+//condition de victoire
+FONCTION resultat_manche(symbole_j:CHAINE;joueurJ:CHAINE):BOOLEEN
+//BUT:dire il y a victoire du joueur
+//ENTRER:aucune
+//SORTIE:si victoire ou non
+
+var test_v:BOOLEEN
+
+DEBUT	
+		test_v<-FAUX
+
+		// 3 symbole identique aligner sur une des 3 lignes
+		SI (ligne_1[1]=ligne_1[3]) ET (ligne_1[1]=ligne_1[5]) ALORS
+			test_v<-true
+		SI (ligne_2[1]=ligne_2[3]) ET (ligne_2[1]=ligne_2[5]) ALORS
+			test_v<-true
+		SI (ligne_3[1]=ligne_3[3]) ET (ligne_3[1]=ligne_3[5]) ALORS
+			test_v<-true
+
+		// 3 symbole identique aligner sur une des 3 colonnes
+		SI (ligne_1[1]=ligne_2[1]) ET (ligne_1[1]=ligne_3[1]) ALORS
+			test_v<-true
+		SI (ligne_1[3]=ligne_2[3]) ET (ligne_1[3]=ligne_3[3]) ALORS
+			test_v<-true
+		SI (ligne_1[5]=ligne_2[5]) ET (ligne_1[5]=ligne_3[5]) ALORS
+			test_v<-true
+
+		// 3 symbole identique aligner sur une des 2 diagonales
+		SI (ligne_1[1]=ligne_2[3]) ET (ligne_1[1]=ligne_3[5]) ALORS
+			test_v<-true
+		SI (ligne_1[5]=ligne_2[3]) ET (ligne_1[5]=ligne_1[1]) ALORS
+			test_v<-true
+
+		resultat_manche<-test_v
+FINFONCTION
+			
+// definie qui commencera
+PROCEDURE commence( joueurJ:CHAINE; joueurJ1:CHAINE; joueurJ2:CHAINE) 	
+//BUT:identifier les joueurs et celui qui commence
+//ENTRER:Les pseudo des joueurs 
+//SORTIE:LE joueur 1 avec son symbole
+
+DEBUT
+
+	//les joueur entre leur pseudo
+	ECRIRE('Joueur 1 entrer votre pseuFAIRE')
+	LIRE(joueurJ1)
+	
+	ECRIRE('Joueur 2 entrer votre pseuFAIRE')
+	LIRE(joueurJ2)
+
+	ECRIRE('il faut gagner ',At_v,'x pour gagner la partie')
+	ECRIRE(joueurJ1,' commence')
+	joueurJ<-joueurJ1
+	symbole_j<-'X'
+FINPROCEDURE
+
+//permet de changer de joueur
+PROCEDURE switch ( joueurJ:CHAINE; symbole_j:CHAINE)
+//BUT:changer de joueur et de symbole
+//ENTRER:aucune
+//SORTIE:le nouveau joueur et sont symbole
+
+DEBUT
+	SI joueurJ=joueurJ1 ALORS
+		DEBUT
+		joueurJ<-joueurJ2
+		symbole_j<-'O'
+		end
+	SINON
+		DEBUT
+		joueurJ<-joueurJ1;
+		symbole_j<-'X';
+		end;
+
+FINPROCEDURE
+		
+DEBUT
+
+	//on fixe les scores et le compteur de manche a 0 et ajoute de information au fichier appraitre sur qu'il existe
+	cpt_manche<-0
+	score_j1<-0
+	score_j2<-0
+	assigne(f_partie,'fichier_morpion.txt')
+
+	commence(joueurJ,joueurJ1,joueurJ2) ;
+	SI FICHIEREXISTE('fichier_morpion.txt') ALORS
+		AJOUTER(f_partie,'Les joueur sont :',joueurJ1,' et ',joueurJ2)
+	SINON
+		REECRIRE(f_partie,'Les joueur sont :',joueurJ1,' et ',joueurJ2)
+	FINSI
+	FERMER(f_partie)
+
+
+
+	REPETER			//boucle de partie
+		DEBUT
+			cpt_tour<-0
+			init_grille
+			test<-FAUX
+			REPETER				//boucle de manche
+
+					//affichage du score			
+					ECRIRE('score de ',joueurJ1,': ',score_j1)
+					ECRIRE('score de ',joueurJ2,': ',score_j2)
+
+					affiche_grille
+
+					//le joueur joue
+					jouer
+
+					//on verifie si victoire
+					test<-resultat_manche(symbole_j,joueurJ)
+
+					//on change de joueur
+					switch(joueurJ,symbole_j	
+
+					//le nombre de tours augmente				
+					cpt_tour<-cpt_tour+1
+
+			//la manche continue tant que qu'il n'y a pas de victoire ou que l'on a jouer moins de 9 coups
+			JUSQU'A (test=true) OU (cpt_tour=9)
+
+			cpt_manche<-cpt_manche+1
+
+			//si pas de victoire 
+			SI cpt_tour=9 ALORS
+					AJOUTER(f_partie,'Manche ',cpt_manche,' Egalité')
+					FERMER(f_partie)
+					ECRIRE('egalite')
+				
+				
+				SINON
+
+					//si victoire
+					nbcoups<-PARTIEENTIERE(cpt_tour/2)
+					AJOUTER(f_partie,'Manche ',cpt_manche,' Perdu par ',joueurJ,' après ',nbcoups, ' coups.')
+					FERMER(f_partie)
+					ECRIRE(joueurJ,' a perdu la manche')	
+					SI joueurJ=joueurJ1 ALORS
+							score_j2<-score_j2+1
+						SINON
+							score_j1<-score_j1+1
+					FINSI
+	
+				
+			FINSI
+		JUSQU'A (score_j2=tot_v ) OU (score_j1=tot_v
+
+		//quand un joueur a ganger
+		SI (score_j2=tot_v) ALORS 
+				ECRIRE(joueurJ2, ' a gagner la partie')
+				AJOUTER(f_partie,'Le Gagnant est ',joueurJ2)
+				FERMER(f_partie)
+		FINSI
+		SI (score_j1=tot_v) ALORS
+				ECRIRE(joueurJ1, ' a gagner la partie')
+				AJOUTER(f_partie,'Le Gagnant est ',joueurJ1)
+				FERMER(f_partie)
+		FINSI
+		
+end.
